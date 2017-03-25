@@ -1,0 +1,16 @@
+{
+  "name": "cpp-analysis",
+  "version": "1.0.0",
+  "description": "analyisis c++ language",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lgybetter",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "co": "^4.6.0",
+    "lodash": "^4.17.4"
+  }
+}

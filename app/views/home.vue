@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <div class="navigator">
+      <button class="menu-btn" @click="open">open</button>
+      <button class="menu-btn" @click="save">save</button>
+    </div>
     <div class="content">
       <div class="code-input">
         <textarea v-model="codeInput">
@@ -23,6 +27,7 @@
 
 <script>
 import { analysisLine } from '../controllers/analysis'
+import fileController from '../controllers/fileController'
 
 export default {
   watch: {
@@ -44,6 +49,20 @@ export default {
       codeShowArr: [],
       annotation: false
     }
+  },
+  methods: {
+    open() {
+      fileController.openDialog().then(filePath => {
+        return fileController.readPackage(filePath)
+      }).then(res => {
+        this.codeInput = res
+      })
+    },
+    save() {
+      fileController.openDialog().then(filePath => {
+        return fileController.writePackage(filePath, this.codeShowArr)
+      })
+    }
   }
 }
 </script>
@@ -52,8 +71,32 @@ export default {
   .container {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
   }
   
+  .navigator {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    height: 7%;
+    background-color: deepskyblue;
+  }
+  
+  .menu-btn {
+    width: 40px;
+    height: 22px;
+    margin: 0 10px 0 10px;
+    background-color: deepskyblue;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+  }
+
   .content {
     display: flex;
     flex-direction: row;

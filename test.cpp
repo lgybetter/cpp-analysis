@@ -1,2 +1,6 @@
 #include <iostream>
-int inta = 0;
+using namespace std;
+int main() {
+  cout<<"lgybetter"<<endl;
+  return 0;
+}

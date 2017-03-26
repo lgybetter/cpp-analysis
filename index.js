@@ -15,8 +15,8 @@ function createWindow() {
     protocol: 'file:',
     slashes: true
   }));
-  // Menu.setApplicationMenu(null);
-  mainWindow.webContents.openDevTools()
+  Menu.setApplicationMenu(null);
+  // mainWindow.webContents.openDevTools()
   mainWindow.on('closed', function () {
     mainWindow = null
   });

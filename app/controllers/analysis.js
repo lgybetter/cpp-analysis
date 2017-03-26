@@ -1,13 +1,3 @@
-const fs = require('fs')
-const ReadLine = require('readline')
-const co = require('co')
-const bluebird = require('bluebird')
-
-const fRead = fs.createReadStream('test.cpp')
-const readline = ReadLine.createInterface({
-  input: fRead
-})
-
 let wordsMap = new Map()
 
 /**
@@ -82,26 +72,14 @@ function judgeKeyWord(letter) {
   return wordsMap.get(letter) === 'keyWord' ? true : false
 }
 
-function readFileAsync() {
-  let annotation = false
-  return new Promise((resolve, reject) => {
-    readline.on('line', line => {
-      console.log(analysisLine(line, annotation))
-    })
-    readline.on('close', () => {
-      return resolve()
-    })
-  })
-}
-
-
-function analysisLine(line, annotation) {
+exports.analysisLine = (line, annotation) => {
   let oneLine = []
   let word = ''
   let i = 0
   let includeFile = false
   while (i < line.length) {
     if (line[i] === '/' && line[i + 1] === '*') {
+      word += line[i]
       i++
       annotation = true;
     }
@@ -116,12 +94,12 @@ function analysisLine(line, annotation) {
         if (judgeKeyWord(word)) {
           oneLine.push({
             word: word,
-            type: '关键字'
+            type: 'keyWord'
           })
         } else {
           oneLine.push({
             word: word,
-            type: '标识符'
+            type: 'identifier'
           })
         }
         if (word === 'include') {
@@ -131,23 +109,25 @@ function analysisLine(line, annotation) {
         i++
       } else if (line[i] === '"') {
         while (i + 1 < line.length && line[i + 1] !== '"') {
-          i++
           word += line[i]
+          i++
         }
+        word += (line[i] || '' )+ (line[i + 1] || '')
         oneLine.push({
           word: word,
-          type: '字符串'
+          type: 'string'
         })
         word = ''
         i += 2
       } else if (line[i] === '\'') {
         while (i + 1 < line.length && line[i + 1] !== '\'') {
-          i++
           word += line[i]
+          i++
         }
+        word += (line[i] || '' )+ (line[i + 1] || '')
         oneLine.push({
           word: word,
-          type: '字符'
+          type: 'char'
         })
         word = ''
         i += 2
@@ -159,7 +139,7 @@ function analysisLine(line, annotation) {
         }
         oneLine.push({
           word: word,
-          type: '数字'
+          type: 'number'
         })
         word = ''
         i++
@@ -167,7 +147,7 @@ function analysisLine(line, annotation) {
         if (line[i] === '<' && includeFile) {
           oneLine.push({
             word: line[i],
-            type: '特殊字符'
+            type: 'specialWord'
           })
           i++
           word += line[i]
@@ -177,7 +157,7 @@ function analysisLine(line, annotation) {
           }
           oneLine.push({
             word: word,
-            type: '库文件关键字'
+            type: 'libraryFile'
           })
           word = ''
           i++
@@ -190,7 +170,7 @@ function analysisLine(line, annotation) {
             }
             oneLine.push({
               word: word,
-              type: '//注释代码'
+              type: 'Annotations'
             })
             word = ''
             i += 3
@@ -202,24 +182,29 @@ function analysisLine(line, annotation) {
             }
             oneLine.push({
               word: word,
-              type: '特殊字符'
+              type: 'specialWord'
             })
             word = ''
             i++
           }
         }
       } else if (line[i] === ' ') {
+        oneLine.push({
+          word: line[i],
+          type: 'space'
+        })
         i++
       }
     } else {
       //表示注释内容
       while (i + 1 < line.length && (line[i + 1] !== '*' && line[i + 2] !== '/')) {
-        i++
         word += line[i]
+        i++
       }
+      word += line[i] + (line[i + 1] || '') + (line[i + 2] || '')
       oneLine.push({
         word: word,
-        type: '/**/注释内容'
+        type: 'Annotations'
       })
       annotation = false;
       word = ''
@@ -228,8 +213,3 @@ function analysisLine(line, annotation) {
   }
   return oneLine
 }
-
-
-co(function* () {
-  yield readFileAsync()
-})

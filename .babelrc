@@ -1,4 +1,5 @@
 {
-	"presets": ["es2015", "stage-0"],
-	"plugins": ["transform-object-assign","transform-vue-jsx","transform-object-rest-spread"/*, "transform-runtime"*/]
+  "presets": [
+    ["es2015", { "modules": false }]
+  ]
 }
